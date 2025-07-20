@@ -1,0 +1,10 @@
+{
+  "name": "@elecmassage/functions",
+  "version": "1.0.0",
+  "dependencies": {
+    "@biomejs/biome": "2.1.2",
+    "@netlify/functions": "4.1.12",
+    "@types/node": "24.0.15",
+    "typescript": "5.8.3"
+  }
+}
