@@ -36,8 +36,9 @@ export default async function onOrderCreate(req: Request, _context: Context) {
     } else {
       throw new Error('Params CPID and CID not found');
     }
+    console.log('csv:', csv);
 
-    await fetch(`https://api.voluum.com/conversion`, {
+    const res = await fetch(`https://api.voluum.com/conversion`, {
       method: 'POST',
       body: csv,
       headers: {
@@ -46,6 +47,8 @@ export default async function onOrderCreate(req: Request, _context: Context) {
         accessKey: voluumAccessKey,
       },
     });
+    const b = await res.json();
+    console.log('body from V', b);
 
     return new Response('Success', { status: 200 });
   } catch (err) {
