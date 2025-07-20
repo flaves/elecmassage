@@ -1,4 +1,4 @@
-import type { Context, HandlerResponse } from '@netlify/functions';
+import type { Context } from '@netlify/functions';
 
 type Order = {
   id: number;
@@ -7,10 +7,7 @@ type Order = {
   created_at: string;
 };
 
-export default async function onOrderCreate(
-  req: Request,
-  _context: Context,
-): Promise<HandlerResponse> {
+export default async function onOrderCreate(req: Request, _context: Context) {
   try {
     const voluumAccessKeyId = Netlify.env.get('VOLUUM_ACCESS_KEY_ID');
     if (!voluumAccessKeyId) {
@@ -50,12 +47,12 @@ export default async function onOrderCreate(
       },
     });
 
-    return { statusCode: 200 };
+    return new Response('Success', { status: 200 });
   } catch (err) {
     if (err instanceof Error) {
-      return { statusCode: 500, body: err.message };
+      return new Response(err.message, { status: 500 });
     }
-    return { statusCode: 500 };
+    return new Response('Unknown Error', { status: 500 });
   }
 }
 
