@@ -12,10 +12,12 @@ export default async function onOrderCreate(
   _context: Context,
 ): Promise<HandlerResponse> {
   try {
-    if (!process.env.VOLUM_ACCESS_KEY_ID) {
+    const voluumAccessKeyId = Netlify.env.get('VOLUUM_ACCESS_KEY_ID');
+    if (!voluumAccessKeyId) {
       throw new Error('VOLUUM_ACCESS_KEY_ID not found');
     }
-    if (!process.env.VOLUM_ACCESS_KEY) {
+    const voluumAccessKey = Netlify.env.get('VOLUUM_ACCESS_KEY');
+    if (!voluumAccessKey) {
       throw new Error('VOLUUM_ACCESS_KEY not found');
     }
     const body = await req.text();
@@ -43,8 +45,8 @@ export default async function onOrderCreate(
       body: csv,
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        accessId: process.env.VOLUM_ACCESS_KEY_ID,
-        accessKey: process.env.VOLUM_ACCESS_KEY,
+        accessId: voluumAccessKeyId,
+        accessKey: voluumAccessKey,
       },
     });
 
