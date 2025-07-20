@@ -38,21 +38,35 @@ export default async function onOrderCreate(req: Request, _context: Context) {
     }
     console.log('csv:', csv);
 
-    const res = await fetch(`https://api.voluum.com/conversion`, {
+    const tokenRes = await fetch(`https://api.voluum.com/auth/access/session`, {
+      method: 'POST',
+      body: JSON.stringify({
+        accessId: voluumAccessKeyId,
+        accessKey: voluumAccessKey,
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!tokenRes.ok) {
+      throw new Error('Token Response not ok');
+    }
+    const tokenBody = (await tokenRes.json()) as { token: string };
+
+    const conversionRes = await fetch(`https://api.voluum.com/conversion`, {
       method: 'POST',
       body: csv,
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        accessId: voluumAccessKeyId,
-        accessKey: voluumAccessKey,
+        'cwauth-token': tokenBody.token,
       },
     });
-    console.log('OK', res.ok);
-    if (!res.ok) {
+    console.log('OK', conversionRes.ok);
+    if (!conversionRes.ok) {
       throw new Error('Response not ok');
     }
-    const b = await res.text();
-    console.log('body from V', b);
+    const conversionBody = (await conversionRes.json()) as {
+      numberOfRows: number;
+    };
+    console.log('conversionBody', conversionBody);
 
     return new Response('Success', { status: 200 });
   } catch (err) {
