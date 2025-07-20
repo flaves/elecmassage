@@ -47,6 +47,10 @@ export default async function onOrderCreate(req: Request, _context: Context) {
         accessKey: voluumAccessKey,
       },
     });
+    console.log('OK', res.ok);
+    if (!res.ok) {
+      throw new Error('Response not ok');
+    }
     const b = await res.text();
     console.log('body from V', b);
 
