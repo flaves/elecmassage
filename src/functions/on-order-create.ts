@@ -25,7 +25,7 @@ export default async function onOrderCreate(req: Request, _context: Context) {
     }
     const { cpid, cid } = extractParams(order.landing_site);
     const transactionId = order.id.toString();
-    const conversionType = 'purchase';
+    const conversionType = 'purchase_shopify';
     const conversionTime = order.created_at;
 
     let csv: string;
