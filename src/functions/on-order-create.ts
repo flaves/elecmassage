@@ -1,5 +1,11 @@
 import type { Context } from '@netlify/functions';
 
+/**
+ * add log for cpid and cid
+ * store list of cids and cpids with the shop name !
+ * + send list to support -> slawomir.zielinski@voluum.com
+ */
+
 type Order = {
   id: number;
   total_price: number;
@@ -20,10 +26,13 @@ export default async function onOrderCreate(req: Request, _context: Context) {
     const body = await req.text();
     const order = JSON.parse(body) as Order;
     const payout = order.total_price;
+    console.log(`Order placed for ${order.id} with amount: ${payout}`);
     if (!order.landing_site) {
       throw new Error('Key landing_site not found');
     }
     const { cpid, cid } = extractParams(order.landing_site);
+    console.log(`#${order.id} - CPID =`, cpid);
+    console.log(`#${order.id} - CID =`, cid);
     const transactionId = order.id.toString();
     const conversionType = 'purchase_shopify';
     const conversionTime = order.created_at;
@@ -36,6 +45,8 @@ export default async function onOrderCreate(req: Request, _context: Context) {
     } else {
       throw new Error('Params CPID and CID not found');
     }
+
+    console.log('Data sent =', csv);
 
     const tokenRes = await fetch(`https://api.voluum.com/auth/access/session`, {
       method: 'POST',
@@ -65,10 +76,11 @@ export default async function onOrderCreate(req: Request, _context: Context) {
       numberOfRows: number;
     };
 
-    return new Response(
-      `Success: ${conversionBody.numberOfRows} conversion(s) added`,
-      { status: 200 },
-    );
+    const message = `Success: ${conversionBody.numberOfRows} conversion(s) added`;
+
+    console.log(message);
+
+    return new Response(message, { status: 200 });
   } catch (err) {
     if (err instanceof Error) {
       return new Response(err.message, { status: 500 });
