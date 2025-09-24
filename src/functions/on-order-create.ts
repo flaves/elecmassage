@@ -27,6 +27,7 @@ export default async function onOrderCreate(req: Request, _context: Context) {
     const order = JSON.parse(body) as Order;
     const payout = order.total_price;
     console.log(`Order placed for ${order.id} with amount: ${payout}`);
+    console.log('Landing site = ', order.landing_site);
     if (!order.landing_site) {
       throw new Error('Key landing_site not found');
     }
